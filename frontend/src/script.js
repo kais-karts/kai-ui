@@ -45,8 +45,8 @@ function updateTimer(state) {
     drawArc(elapsed, state.countDownDuration);
     requestAnimationFrame(() => updateTimer(state.countDownStart)); // Call the next frame with a parameter
   } else {
-    hideTimer(); // Ensure the arc is fully drawn at the end
-    hidePowerUp();
+    hideTimer(state); // Ensure the arc is fully drawn at the end
+    hidePowerUp(state);
     console.log("Countdown finished!");
   }
 }
@@ -59,7 +59,7 @@ function showTimer(state) {
 
 function hideTimer(state) {
   console.log("hide timer");
-  drawArc(1, 1);
+  drawArc(state);
   state.timerVisible = false;
 }
 

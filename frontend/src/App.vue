@@ -80,8 +80,10 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import Kart from "./Kart";
+import Kart from "./kart.js";
 import { showTimer, showItem, showWarning, hidePowerUp, hideTimer, updateTimer } from "./script";
+
+const globaltest = "test"
 
 export default {
   setup() {
@@ -124,8 +126,16 @@ export default {
         powerUpImages: powerUpImages,
       };
 
-      const ws = new WebSocket("ws://localhost:8080");
-      ws.onmessage = (event) => {
+
+
+      const wss = new WebSocket("ws://localhost:5000"); // WebSocket Server
+      // const port = new SerialPort({ path: "COM15", baudRate: 115200 }); // Change port if needed
+      // const parser = port.pipe(new ReadlineParser({ delimiter: "\n" })); // Serial data parser
+
+
+
+      console.log("testing")
+      wss.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log(data);
         const existingKart = karts.value.find((k) => k.id === data.id);
@@ -135,12 +145,33 @@ export default {
         } else {
           karts.value.push(new Kart(data.id, data.x, data.y));
         }
+        
+        if (data.action == "item_pickup"){
+          console.log("Item Pickup", data.item);
+          console.log("state", state)
+          showTimer(state);
+          showItem(state, data.item);
+          powerUpImages.forEach((img) => img.classList.remove("active"));
+        }
+        else  if (data.action == "item_use"){
+          console.log("Item Use", data.item);
+          console.log("state", state)
+          if (state.timerVisible) {
+            countDownStart = new Date().getTime();
+            countDownDuration = data.duration * 1000;
+            updateTimer(state);
+          }
+        }
+
+        if (data.action == "")
+
         if (data.msg === 1) {
           console.log("Item Pickup", data.item);
           showTimer(state);
           showItem(state, data.item);
           powerUpImages.forEach((img) => img.classList.remove("active"));
         }
+
       };
     });
 

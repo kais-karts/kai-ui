@@ -113,7 +113,7 @@ function showWarning(item) {
     // document.getElementById("warningDiv").style.backgroundColor = "#2d3747";
     document.getElementById("warningDiv").style.backgroundColor = "red";
     blinkImage(item);
-    if (new Date().getTime() - startTime >= 5000) {
+    if (new Date().getTime() - startTime >= `5000`) {
       clearInterval(intervalId);
       trapImages[item].classList.remove("active");
       document.getElementById("warningDiv").style.backgroundColor =
