@@ -2,11 +2,11 @@ const item_names = [
   "Banana",
   "Bomb",
   "redShroom",
+  "lightning",
+  "bulletBill",
   "goldShroom",
   "redShell",
   "blueShell",
-  "lightning",
-  "bulletBill",
 ];
 const powerUpImages = document.querySelectorAll(".slideshow img");
 
