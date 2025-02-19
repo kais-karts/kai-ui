@@ -17,7 +17,7 @@
 
   <!-- Main UI -->
   <div class="bg-gray-800 h-screen z-10">
-    <div class="container mx-auto px-4 py-20 h-full">
+    <div class="container mx-auto px-4 py-10 h-full">
       <div class="flex h-full">
         <!-- Map & Timer Section -->
         <div class="w-3/5 relative h-full bg-slate-600 rounded-2xl">
@@ -26,18 +26,19 @@
               <canvas id="countdownCanvas" width="400" height="400" class="absolute z-20"></canvas>
               <div class="flex justify-center items-center w-full h-full">
                 <div class="slideshow w-full h-full flex justify-center items-center">
-                  <img src="/assets/power_ups/banana.png" class="power-up" alt="Banana" />
-                  <img src="/assets/power_ups/bobomb.png" class="power-up" alt="Bomb" />
-                  <img src="/assets/power_ups/mushroom.png" class="power-up" alt="redShroom" />
-                  <img src="/assets/power_ups/goldmushroom.png" class="power-up" alt="goldShroom" />
-                  <img src="/assets/power_ups/redshell.png" class="power-up" alt="redShell" />
-                  <img src="/assets/power_ups/blueshell.png" class="power-up" alt="blueShell" />
-                  <img src="/assets/power_ups/bolt.png" class="power-up" alt="lightning" />
+                  <img src="/assets/power_ups/banana.png" class="power-up" id="spinner-0" />
+                  <img src="/assets/power_ups/bobomb.png" class="power-up" id="spinner-1" />
+                  <img src="/assets/power_ups/mushroom.png" class="power-up" id="spinner-2" />
+                  <img src="/assets/power_ups/bolt.png" class="power-up" id="spinner-3" />
                   <img
                     src="/assets/power_ups/bill.png"
                     class="power-up h-[170px] max-h-[170px]"
-                    alt="bulletBill"
+                    id="spinner-4"
                   />
+                  <img src="/assets/power_ups/goldmushroom.png" class="power-up" id="spinner-5" />
+                  <img src="/assets/power_ups/redshell.png" class="power-up" id="spinner-6" />
+                  <img src="/assets/power_ups/blueshell.png" class="power-up" id="spinner-7" />
+
                   <img
                     src="/assets/power_ups/no-item.png"
                     style="display: block; object-fit: contain"
@@ -84,7 +85,8 @@
             </div>
           </div>
           <!-- <button class="bg-slate-300" @click="recieve_item()">Recieve Item</button>
-          <button class="bg-slate-300" @click="use_item()">Use item</button>
+          <button class="bg-slate-300" @click="use_buff()">Use buff</button>
+          <button class="bg-slate-300" @click="send_debuff()">Send debuff</button>
           <button class="bg-slate-300 text-white" @click="get_hit()">Get Hit</button> -->
         </div>
       </div>
@@ -146,8 +148,8 @@ export default {
         1.5 * Math.PI + 2 * Math.PI * percentage,
         true
       );
-      ctx.lineWidth = 8;
-      ctx.strokeStyle = "blue";
+      ctx.lineWidth = 18;
+      ctx.strokeStyle = "#2B7FFF";
       ctx.stroke();
       ctx.closePath();
       console.log(1.5 * Math.PI, 1.5 * Math.PI + 2 * Math.PI * percentage);
@@ -220,7 +222,7 @@ export default {
       imageShowing = !imageShowing;
     }
 
-    function showWarning(item) {
+    function showWarning(item, duration) {
       hidePowerUp();
       hideTimer();
       console.log("incoming item");
@@ -228,8 +230,9 @@ export default {
       let intervalId = setInterval(() => {
         document.getElementById("warningDiv").style.display = "flex";
         blinkImage(item);
-        if (new Date().getTime() - startTime >= 5000) {
+        if (new Date().getTime() - startTime >= duration * 1000) {
           clearInterval(intervalId);
+          console.log(trapImages[item]);
           trapImages[item].classList.remove("active");
           document.getElementById("warningDiv").style.display = "none";
         }
@@ -242,15 +245,20 @@ export default {
     // This function is called when the button is clicked.
     // It simulates receiving an item (in this example, "banana" at index 0).
     // const recieve_item = () => {
-    //   const itemIndex = 0; // Change this index for different power-ups
-    //   console.log("Item Pickup", "banana");
+    //   const data = { item: 0, item_type: "debuff" };
+
+    //   console.log("Pick up Item", data.item);
     //   noItemImage.style.display = "none";
-    //   showTimer();
-    //   showItem(itemIndex);
-    //   hidePowerUp();
+    //   if (data.item_type === "buff") {
+    //     showTimer();
+    //     showItem(data.item);
+    //     hidePowerUp();
+    //   } else if (data.item_type === "debuff") {
+    //     document.getElementById("spinner-" + data.item).classList.add("active");
+    //   }
     // };
 
-    // const use_item = () => {
+    // const use_buff = () => {
     //   console.log("Item Use", "banana");
     //   if (timerVisible) {
     //     countDownStart = new Date().getTime();
@@ -259,21 +267,27 @@ export default {
     //   }
     // };
 
+    // const send_debuff = () => {
+    //   console.log("Send Debuff", "banana");
+    //   hidePowerUp();
+    //   noItemImage.style.display = "block";
+    // };
+
     // const get_hit = () => {
-    //   showWarning(1);
+    //   showWarning(1, 10);
     // };
 
     // -------------------------------
     // WebSocket & DOM Initialization
     // -------------------------------
     onMounted(() => {
-      // ranked_karts.value = [
-      //   new Kart(1, 100, 100, 0),
-      //   new Kart(2, 200, 200, 1),
-      //   new Kart(3, 250, 300, 2),
-      // ];
+      ranked_karts.value = [
+        new Kart(1, 100, 100, 0),
+        new Kart(2, 200, 200, 1),
+        new Kart(3, 250, 300, 2),
+      ];
 
-      // karts.value = ranked_karts.value;
+      karts.value = ranked_karts.value;
 
       // Get canvas & context for countdown
       canvas = document.getElementById("countdownCanvas");
@@ -299,19 +313,24 @@ export default {
         if (data.action === "item_pickup") {
           console.log("Pick up Item", data.item);
           noItemImage.style.display = "none";
-          showTimer();
-          showItem(data.item);
-          hidePowerUp();
+          if (data.item_type === "buff") {
+            showTimer();
+            showItem(data.item);
+            hidePowerUp();
+          } else if (data.item_type === "debuff") {
+            document.getElementById("spinner-" + data.item).classList.add("active");
+          }
         } else if (data.action === "use_buff") {
-          console.log("Buff Use", "banana");
+          console.log("Item Use", data.item);
           if (timerVisible) {
             countDownStart = new Date().getTime();
-            countDownDuration = 5 * 1000;
+            countDownDuration = data.duration * 1000;
             updateTimer();
           }
         } else if (data.action === "send_debuff") {
           console.log("Send Debuff", data.item);
           hidePowerUp();
+          noItemImage.style.display = "block";
         } else if (data.action === "item_hit") {
           console.log("Hit by item", data.item);
           showWarning(data.item, data.duration);
@@ -341,7 +360,12 @@ export default {
       };
     });
 
-    return { karts, ranked_karts, scaleXLocation, scaleYLocation};
+    return {
+      karts,
+      ranked_karts,
+      scaleXLocation,
+      scaleYLocation,
+    };
   },
 };
 </script>
