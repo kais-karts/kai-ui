@@ -341,7 +341,7 @@ export default {
       };
     });
 
-    return { karts, ranked_karts, scaleXLocation, scaleYLocation, recieve_item, use_item, get_hit };
+    return { karts, ranked_karts, scaleXLocation, scaleYLocation};
   },
 };
 </script>
