@@ -101,7 +101,7 @@ import Kart from "./kart.js";
 export default {
   setup() {
     const karts = ref([]);
-    const ranked_karts = ref([]);
+    let ranked_karts = ref([]); //TODO: Ty change was const ranked_karts
 
     // Map scaling helpers
     const map_height = 400;
@@ -214,6 +214,8 @@ export default {
     // Warning / Trap Functions
     // -------------------------------
     function blinkImage(item) {
+      console.log("trapImages", trapImages, "item", item);
+
       if (imageShowing) {
         trapImages[item].classList.remove("active");
       } else {
@@ -232,7 +234,7 @@ export default {
         blinkImage(item);
         if (new Date().getTime() - startTime >= duration * 1000) {
           clearInterval(intervalId);
-          console.log(trapImages[item]);
+          console.log("starttime", startTime);
           trapImages[item].classList.remove("active");
           document.getElementById("warningDiv").style.display = "none";
         }
@@ -337,21 +339,26 @@ export default {
         } else if (data.action === "players_update") {
           console.log("Item Use", data.item);
           // Update or add kart data based on incoming coordinates
-          data.players_update.forEach((player) => {
-            const existingKart = karts.find((k) => k.id === player.id);
+          console.log("data", data);
+          console.log("karts", karts._rawValue);
+          data.player_status.forEach((player) => {
+            const existingKart = karts._rawValue.find((k) => k.id === player.id);
             if (existingKart) {
               existingKart.x = player.x;
               existingKart.y = player.y;
-              existingKart.ranking = player.ranking;
+              existingKart.ranking = player.rank;
             } else {
-              karts.push(new Kart(player.id, player.x, player.y, player.ranking));
+              karts.value.push(new Kart(player.id, player.x, player.y, player.ranking));
             }
           });
           // return first 3 karts by ranking
-          karts.sort((a, b) => a.ranking - b.ranking);
-          ranked_karts = karts.slice(0, 3);
+          karts.value.sort((a, b) => a.ranking - b.ranking);
+
+          ranked_karts = karts.value.slice(0, 3);
+          console.log("HELOO");
+          console.log("ranked_karts", ranked_karts);
           if (!ranked_karts.some((kart) => kart.id === SELF_KART_ID)) {
-            const globalKart = karts.find((kart) => kart.id === SELF_KART_ID);
+            const globalKart = karts.value.find((kart) => kart.id === SELF_KART_ID);
             if (globalKart) {
               ranked_karts[2] = globalKart;
             }
