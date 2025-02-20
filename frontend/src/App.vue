@@ -337,13 +337,13 @@ export default {
           hidePowerUp();
           noItemImage.style.display = "block";
         } else if (data.action === "item_hit") {
-          console.log("Hit by item", data.item);
+          // console.log("Hit by item", data.item);
           showWarning(data.item, data.duration);
         } else if (data.action === "players_update") {
           console.log("Item Use", data.item);
           // Update or add kart data based on incoming coordinates
-          console.log("data", data);
-          console.log("karts", karts._rawValue);
+          // console.log("data", data);
+          // console.log("karts", karts._rawValue);
           data.player_status.forEach((player) => {
             const existingKart = karts._rawValue.find((k) => k.id === player.id);
             if (existingKart) {
@@ -357,23 +357,24 @@ export default {
           // return first 3 karts by ranking
           karts.value.sort((a, b) => a.ranking - b.ranking);
 
-          ranked_karts = karts.value.slice(0, 3);
-          console.log("HELOO");
-          console.log("ranked_karts", ranked_karts);
-          console.log("self kart", SELF_KART_ID);
+          ranked_karts.value = karts.value.slice(0, 3);
+          // console.log("HELOO");
+          // console.log("ranked_karts 1", ranked_karts);
+          // console.log("self kart", SELF_KART_ID);
           if (!ranked_karts.some((kart) => kart.id === SELF_KART_ID)) {
             const globalKart = karts.value.find((kart) => kart.id === SELF_KART_ID);
             if (globalKart) {
-              ranked_karts[2] = globalKart;
+              // console.log("ranked_karts 2", ranked_karts);
+              ranked_karts.value[2] = globalKart;
             }
           }
         } else if (data.action === "player_update") {
           // Update or add kart data based on incoming coordinates
-          console.log("data", data);
+          // console.log("data", data);
           // console.log("p", karts._rawValue);
           data.player_status.ranks.forEach((player, index) => {
             const rank = index;
-            console.log("index", index);
+            // console.log("index", index);
             //player is index and rank is number
             const existingKart = karts._rawValue.find((k) => k.id === player);
             let x = null;
@@ -392,14 +393,15 @@ export default {
           });
           // return first 3 karts by ranking
           karts.value.sort((a, b) => a.ranking - b.ranking);
-          console.log("karts", karts);
-          ranked_karts = karts.value.slice(0, 3);
-          console.log("ranked karts", ranked_karts);
-          if (!ranked_karts.some((kart) => kart.id === SELF_KART_ID)) {
+          // console.log("karts", karts);
+          ranked_karts.value = karts.value.slice(0, 3);
+          // console.log("ranked karts", ranked_karts);
+          if (!ranked_karts.value.some((kart) => kart.id === SELF_KART_ID)) {
             const globalKart = karts.value.find((kart) => kart.id === SELF_KART_ID);
-            console.log("globalKart", globalKart);
+            // console.log("globalKart", globalKart);
             if (globalKart) {
-              ranked_karts[2] = globalKart;
+              // console.log("ranked karts", ranked_karts, "ranked karts value", ranked_karts.value);
+              ranked_karts.value[2] = globalKart;
             }
           }
         }
