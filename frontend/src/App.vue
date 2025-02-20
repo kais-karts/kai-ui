@@ -65,6 +65,7 @@
               }"
             >
               <img
+                v-if="kart.x !== null && kart.y !== null"
                 :src="'/assets/heads/' + kart.get_name() + '-head.png'"
                 :alt="kart.get_name()"
                 class="w-14 h-14"
@@ -115,6 +116,8 @@ export default {
     let timerVisible = false;
     let imageShowing = false;
     let slideshowIndex = 0;
+
+    const showAllPlayers = false;
 
     // These DOM elements will be set in onMounted
     let canvas, ctx, powerUpImages, trapImages, noItemImage;
@@ -348,7 +351,7 @@ export default {
               existingKart.y = player.y;
               existingKart.ranking = player.rank;
             } else {
-              karts.value.push(new Kart(player.id, player.x, player.y, player.ranking));
+              karts.value.push(new Kart(player.id, player.x, player.y, player.rank));
             }
           });
           // return first 3 karts by ranking
@@ -357,8 +360,44 @@ export default {
           ranked_karts = karts.value.slice(0, 3);
           console.log("HELOO");
           console.log("ranked_karts", ranked_karts);
+          console.log("self kart", SELF_KART_ID);
           if (!ranked_karts.some((kart) => kart.id === SELF_KART_ID)) {
             const globalKart = karts.value.find((kart) => kart.id === SELF_KART_ID);
+            if (globalKart) {
+              ranked_karts[2] = globalKart;
+            }
+          }
+        } else if (data.action === "player_update") {
+          // Update or add kart data based on incoming coordinates
+          console.log("data", data);
+          // console.log("p", karts._rawValue);
+          data.player_status.ranks.forEach((player, index) => {
+            const rank = index;
+            console.log("index", index);
+            //player is index and rank is number
+            const existingKart = karts._rawValue.find((k) => k.id === player);
+            let x = null;
+            let y = null;
+            if (player == SELF_KART_ID) {
+              x = data.player_status.x;
+              y = data.player_status.y;
+            }
+            if (existingKart) {
+              existingKart.x = x;
+              existingKart.y = y;
+              existingKart.ranking = rank;
+            } else {
+              karts.value.push(new Kart(player, x, y, rank));
+            }
+          });
+          // return first 3 karts by ranking
+          karts.value.sort((a, b) => a.ranking - b.ranking);
+          console.log("karts", karts);
+          ranked_karts = karts.value.slice(0, 3);
+          console.log("ranked karts", ranked_karts);
+          if (!ranked_karts.some((kart) => kart.id === SELF_KART_ID)) {
+            const globalKart = karts.value.find((kart) => kart.id === SELF_KART_ID);
+            console.log("globalKart", globalKart);
             if (globalKart) {
               ranked_karts[2] = globalKart;
             }

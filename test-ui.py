@@ -17,6 +17,12 @@ map_locs = [
 ]
 index = 0
 
+player_locs = [
+    {"x": 50, "y":75, "ranks": [3,2,1,4,5]},
+    {"x": 25, "y":30, "ranks": [1,2,3,4,5]},
+    {"x": 90, "y":10, "ranks": [5,4,3,2,1]}
+]
+
 # ---------------- WEBSOCKET SERVER ----------------
 async def handler(websocket, path):
     print("Client connected")
@@ -115,12 +121,14 @@ async def on_press_async(key):
 
         elif key == keyboard.Key.alt_l:
             # Example: players_update
-            rank_data = {"player1": 1, "player2": 2}  # sample data
             msg = json.dumps({
-                "action": "players_update",
-                "player_status": rank_data
+                "action": "player_update",
+                "player_status": player_locs[index]
             })
-            print(f"[Keyboard] -> players_update {rank_data}")
+            print(f"[Keyboard] -> player_update {player_locs[index]}")
+            index += 1
+            if index >= 3:
+                index = 0
             await broadcast(msg)
         elif key == keyboard.Key.tab:
             print("index",index,"\n \n")
